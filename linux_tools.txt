@@ -1,0 +1,103 @@
+
+Port check via nc:
+
+Check Ports:
+
+nc -zv 192.168.56.10 20-80
+
+Check Specific Port:
+
+nc -zv 192.168.56.10 80
+
+
+SysTools Script Stuff:
+
+# Kill all top process which are collecting the info
+
+for i in `ps -ef| grep -w top | grep -v grep | awk '{print $2}'`; do kill -9 $i; done
+for i in `ps -ef| grep -w mpstat  | grep -v grep | awk '{print $2}'`; do kill -9 $i; done
+for i in `ps -ef| grep -w sar | grep -v grep | awk '{print $2}'`; do kill -9 $i; done
+for i in `ps -ef| grep -w iostat  | grep -v grep | awk '{print $2}'`; do kill -9 $i; done
+for i in `ps -ef| grep -w vmstat | grep -v grep | awk '{print $2}'`; do kill -9 $i; done
+
+LSOF lookup:
+
+sudo lsof | awk '{if(NR>1) print $3}' | sort | uniq -c | sort -nr | head
+
+Benchmark Tools -
+
+Disk - iozone
+
+Network - iperf
+
+Disk write test with dd: dd if=/dev/zero of=test bs=64k count=16k conv=fdatasync
+
+Output should look like this:
+16384+0 records in
+16384+0 records out
+1073741824 bytes (1.1 GB) copied, 4.86922 s, 221 MB/s
+
+
+Sys bench:
+
+sysbench --test=fileio --file-total-size=150G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run
+
+Sysadmin Tools:
+nmon
+mpstat
+vmstat
+top
+atop
+htop
+sar
+iostat
+
+Cluster Tools:
+clush
+ansible
+
+Disk Checks for performance:
+
+iostat -cdmx 1  | awk '{now=strftime("%Y-%m-%d %H:%M:%S "); print now $0}'
+
+Disk Info:
+
+lsblk
+od -A d -t x -N 16 -j 8224 /dev/sdc
+
+IOZone:
+
+ Auto Mode
+172.31.43.96:   File size set to 4194304 KB
+172.31.43.96:   Command line used: /opt/cluster-validation/pre-install/iozone -a -s 4g -b /opt/iozone_output.xls /dev/xvdf
+172.31.43.96:   Output is in Kbytes/sec
+172.31.43.96:   Time Resolution = 0.000001 seconds.
+172.31.43.96:   Processor cache size set to 1024 Kbytes.
+172.31.43.96:   Processor cache line size set to 32 bytes.
+172.31.43.96:   File stride size set to 17 * record size.
+
+URL: https://www.howtoforge.com/how-to-benchmark-your-system-cpu-file-io-mysql-with-sysbench
+
+CPU:
+
+sysbench --test=cpu --cpu-max-prime=20000 run
+
+DISK:
+
+cd to /mapr/demo or NFS mount
+
+sysbench --test=fileio --file-total-size=1G prepare
+
+sysbench --test=fileio --file-total-size=1G --file-test-mode=rndrw --init-rng=on --max-time=300 --max-requests=0 run
+ 
+sysbench --test=fileio --file-total-size=1G cleanup 
+
+MYSQL:
+
+sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=test --mysql-user=root --mysql-password=yourrootsqlpassword prepare
+
+sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=test --mysql-user=root --mysql-password=yourrootsqlpassword --max-time=60 --oltp-read-only=on --max-requests=0 --num-threads=8 run
+
+sysbench --test=oltp --mysql-db=test --mysql-user=root --mysql-password=yourrootsqlpassword cleanup
+
+
