@@ -1,0 +1,10 @@
+
+Port check via nc:
+
+Check Ports:
+
+nc -zv 192.168.56.10 20-80
+
+Check Specific Port:
+
+nc -zv 192.168.56.10 80
